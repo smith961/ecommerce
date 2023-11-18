@@ -17,37 +17,36 @@ CORS(app)
 def hello_world():
     return 'Hello world'
 
-@app.route("/adminRegister", methods = ['POST'])
+@app.route("/adminRegister", methods = ['GET','POST'])
 def adminRegister():
-    allusers = User.query.all()
-    # allusers = mongo.db.admins
-
-    # user = allusers.find_one({'email': request.json['email']})
-    # companyName = allusers.find_one({'companyName': request.json['companyName']})
-    # phone = allusers.find_one({'phone': request.json['phone']})
-    user = User(
+    if request.method == 'GET':
+        return make_response(
+            [user.to_dict() for user in User.query.all],
+            200
+        )
+    elif request.method == 'POST':
+         user = User(
         email = request.form.get("email"),
         companyName = request.form.get("companyName"),
         phone = request.form.get("phone")
     )
-    db.session.add(user)
-    db.session.commit()
-    # if user:
-    #     return jsonify(message='Email already exists'), 401
-    # if companyName:
-    #     return jsonify(message='companyName already exists'), 401
-    # if phone:
-    #     return jsonify(message='Phone Number already exists'), 401
+         db.session.add(user)
+         db.session.commit()
     
-    # if request.json['password'] != request.json['cpassword']:
-    #     return jsonify(message='Password not Matching!!!'), 401
     user_dict = user.to_dict()
     response = make_response(user_dict, 201)
     return response
 
-@app.route("/adminLogin", methods=['POST'])
+@app.route("/adminLogin", methods=['GET','POST'])
 def adminLogin():
-    allusers = User.query.all()
+    if request.method == 'GET':
+        return make_response(
+            [user.to_dict() for user in User.query.all()],
+            200
+        )
+    elif request.method == "POST":
+        pass
+   
 
 @app.route("/logoutAdmin", methods = ['POST'])
 def logoutAdmin():
